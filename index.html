@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
 <meta name="theme-color" content="#07101a">
-<title>MY GREEK TV | Multi-View v2</title>
+<title>MY GREEK TV | Multi-View v3 · 11 channels</title>
 <style>
 :root{color-scheme:dark;--bg:#07101a;--panel:#0c1927;--fg:#edf8ff;--sub:#abc0d0;--mint:#7ce5bc;--border:#294253}
 *{box-sizing:border-box}
@@ -19,15 +19,15 @@ h1{font-size:clamp(16px,2vw,22px);letter-spacing:-.02em;line-height:1;margin:0}
 button{font:inherit;font-size:12px;font-weight:800;white-space:nowrap;border:1px solid #4b6575;border-radius:8px;min-height:37px;padding:7px 11px;background:#1b3040;color:#fff;cursor:pointer}
 button.primary{background:var(--mint);border-color:var(--mint);color:#062d24}
 button:focus-visible,.watch:focus-visible,.audio-slider:focus-visible{outline:3px solid var(--mint);outline-offset:2px}
-.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));flex:1;min-height:0;gap:7px;padding:0 11px 11px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(3,minmax(0,1fr));flex:1;min-height:0;gap:6px;padding:0 10px 10px}
 .tile{display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden}
-.tilehead{display:flex;align-items:center;justify-content:space-between;gap:5px;min-height:39px;padding:3px 7px;background:#112738;flex-shrink:0}
+.tilehead{display:flex;align-items:center;justify-content:space-between;gap:5px;min-height:35px;padding:3px 7px;background:#112738;flex-shrink:0}
 .chname{font-size:clamp(10px,1.1vw,14px);font-weight:800;letter-spacing:.01em;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.soundcontrol{display:flex;align-items:center;gap:5px;flex-shrink:0;min-height:34px;cursor:default}
+.soundcontrol{display:flex;align-items:center;gap:5px;flex-shrink:0;min-height:28px;cursor:default}
 .speaker{width:17px;text-align:center;font-size:14px;line-height:1;user-select:none}
-.audio-slider{display:block;-webkit-appearance:none;appearance:none;width:68px;height:28px;margin:0;border:1px solid #4b677a;border-radius:30px;background:#304759;cursor:ew-resize;outline:none;touch-action:none;user-select:none;-webkit-user-select:none;padding:0 3px;transition:background .13s}
+.audio-slider{display:block;-webkit-appearance:none;appearance:none;width:68px;height:25px;margin:0;border:1px solid #4b677a;border-radius:30px;background:#304759;cursor:ew-resize;outline:none;touch-action:none;user-select:none;-webkit-user-select:none;padding:0 3px;transition:background .13s}
 .audio-slider.on{background:#2b9e77;border-color:#6ae5b2}
-.audio-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;background:#fff;border-radius:50%;border:1px solid #e1edf2;box-shadow:0 1px 3px #0007}
+.audio-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:19px;height:19px;background:#fff;border-radius:50%;border:1px solid #e1edf2;box-shadow:0 1px 3px #0007}
 .audio-slider::-moz-range-thumb{width:22px;height:22px;background:#fff;border:1px solid #e1edf2;border-radius:50%}
 .audio-slider::-moz-range-track{background:transparent;border:0}
 .watch{position:relative;display:block;flex:1;min-height:0;background:black;cursor:pointer;overflow:hidden;touch-action:manipulation}
@@ -45,13 +45,13 @@ button:focus-visible,.watch:focus-visible,.audio-slider:focus-visible{outline:3p
 .focushead strong{font-size:clamp(15px,2vw,20px);text-shadow:0 1px 3px #000}
 .focus video{height:100%;width:100%;object-fit:contain}
 @media(max-width:650px) and (orientation:portrait){body{height:auto;min-height:100dvh;overflow:auto}.grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:none;flex:none}.watch{aspect-ratio:16/9;flex:none}.audio-slider{width:59px}.tilehead{padding:4px}.chname{font-size:10px}}
-@media(max-height:450px) and (orientation:landscape){header{min-height:43px;padding:4px 10px}.tilehead{min-height:33px}.audio-slider{width:54px;height:25px}.audio-slider::-webkit-slider-thumb{width:19px;height:19px}.grid{gap:5px;padding:0 8px 8px}button{min-height:31px;padding:5px 8px}}
+@media(max-height:450px) and (orientation:landscape){header{min-height:43px;padding:4px 10px}.tilehead{min-height:29px}.audio-slider{width:54px;height:25px}.audio-slider::-webkit-slider-thumb{width:19px;height:19px}.grid{gap:5px;padding:0 8px 8px}button{min-height:31px;padding:5px 8px}}
 </style>
 </head>
 <body>
 <header>
-  <div class="brand"><h1>MY GREEK TV</h1><span class="live">LIVE</span></div>
-  <div class="actions"><button id="two" type="button">2 LIVE</button><button id="all" class="primary" type="button">6 LIVE</button><button id="stop" type="button" aria-label="Σταμάτημα όλων">■ STOP</button></div>
+  <div class="brand"><h1>MY GREEK TV</h1><span class="live">V3 LIVE</span></div>
+  <div class="actions"><button id="two" type="button">2 LIVE</button><button id="six" type="button">6 LIVE</button><button id="all" class="primary" type="button">11 LIVE</button><button id="stop" type="button" aria-label="Σταμάτημα όλων">■ STOP</button></div>
 </header>
 <main class="grid" id="grid" aria-label="Πολλαπλή προβολή καναλιών"></main>
 <div class="focus" id="focus" aria-hidden="true">
@@ -60,17 +60,23 @@ button:focus-visible,.watch:focus-visible,.audio-slider:focus-visible{outline:3p
 </div>
 <script>
 'use strict';
-// The original six streams are preserved. Two additional slots are reserved.
+// Version 3: six original channels and five newly added Greek live channels.
+// Stream sources are public listings and can change without warning.
 const channels=[
  {id:'skai',name:'ΣΚΑΪ',url:'https://skai-live.siliconweb.com/media/cambria4/index.m3u8',format:'hls'},
  {id:'action',name:'ACTION 24',url:'https://actionlive.siliconweb.com/actionabr/actiontv/playlist.m3u8',format:'hls'},
  {id:'naft',name:'ΝΑΥΤΕΜΠΟΡΙΚΗ',url:'https://telmaco.ascdn.broadpeak.io/nafteboriki/default/index.m3u8',format:'hls'},
  {id:'ert',name:'ERT NEWS',url:'https://ert-ucdn.broadpeak-aas.com/bpk-tv/ERTNews/default/index.mpd',format:'dash'},
  {id:'open',name:'OPEN',url:'https://liveopen.siliconweb.com/openTvLive/liveopen/playlist.m3u8',format:'hls'},
- {id:'one',name:'ONE CHANNEL',url:'https://onechannel.siliconweb.com/one/stream/chunks_dvr.m3u8',format:'hls'}
+ {id:'one',name:'ONE CHANNEL',url:'https://onechannel.siliconweb.com/one/stream/chunks_dvr.m3u8',format:'hls'},
+ {id:'alpha',name:'ALPHA',url:'https://alphatvlive2.siliconweb.com/alphatvlive/live_abr/playlist.m3u8',format:'hls'},
+ {id:'star',name:'STAR',url:'https://livestar.siliconweb.com/starvod/star4/star4.m3u8',format:'hls'},
+ {id:'meganews',name:'MEGA NEWS',url:'https://c98db5952cb54b358365984178fb898a.msvdn.net/live/S99841657/NU0xOarAMJ5X/playlist.m3u8',format:'hls'},
+ {id:'bluesky',name:'BLUE SKY',url:'https://cdn5.smart-tv-data.com/bluesky/bluesky-live/playlist.m3u8',format:'hls'},
+ {id:'ant1',name:'ANT1',url:'https://mcdn.antennaplus.gr/live/media0/Ant1/HLS/Ant1.m3u8',format:'hls'}
 ];
-const slots=['skai','action','naft','ert','open','one',null,null];
-const totalSlots=8;
+const slots=['skai','action','naft','ert','open','one','alpha','star','meganews','bluesky','ant1',null];
+const totalSlots=12;
 const videos=[],sliders=[],speakers=[],feedbacks=[],dashSessions=Array(totalSlots).fill(null),hlsSessions=Array(totalSlots).fill(null);
 const loaded=new Set(),grid=document.getElementById('grid'),focus=document.getElementById('focus'),focusVideo=document.getElementById('focusVideo');
 const channelFor=i=>channels.find(c=>c.id===slots[i]);
@@ -123,7 +129,7 @@ function selectAudio(i,enable){
   void loadSlot(i,session);
  }else{
   // Direct touch/slider interaction is required for audio on iOS WebKit.
-  const attempt=videos[i].play();if(attempt&&typeof attempt.catch==='function')attempt.catch(()=>{});
+  const attempt=videos[i].play();if(attempt&&typeof attempt.catch==='function')attempt.catch(()=>{feedbacks[i].textContent='🔇';});
  }
 }
 function cleanup(i){
@@ -200,7 +206,8 @@ function closeFocus(){
  for(const i of loaded){videos[i].play().catch(()=>{})}
 }
 document.getElementById('two').addEventListener('click',()=>start(2));
-document.getElementById('all').addEventListener('click',()=>start(8));
+document.getElementById('six').addEventListener('click',()=>start(6));
+document.getElementById('all').addEventListener('click',()=>start(11));
 document.getElementById('stop').addEventListener('click',stop);
 document.getElementById('back').addEventListener('click',closeFocus);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&focusIndex!==-1)closeFocus()});

@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="theme-color" content="#09111d">
+<title>Mercedes Multi-View | 8 θέσεις</title>
+<style>
+:root{color-scheme:dark;--bg:#07101a;--fg:#eef8ff;--sub:#a5b5c6;--line:#2a4251;--mint:#7ce5bc;--panel:#0d1c2b}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overscroll-behavior:none}
+header{display:flex;align-items:center;justify-content:space-between;gap:9px;padding:12px 13px 9px;flex-wrap:wrap}
+h1{font-size:clamp(17px,2.3vw,23px);line-height:1.1;letter-spacing:-.02em;margin:0}.intro{font-size:11px;color:var(--sub);margin:4px 0 0}.controls{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+button{font:inherit;border:0;cursor:pointer;border-radius:8px;padding:9px 12px;background:var(--mint);color:#073526;font-weight:750;min-height:36px}button.secondary{background:#25394b;color:#eff7ff;border:1px solid #486477}
+button:focus-visible,select:focus-visible,.tile:focus-visible{outline:3px solid var(--mint);outline-offset:2px}
+.status{font-size:11px;color:#b7c8d9;padding:3px 13px 9px}.status b{color:#fff}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;padding:0 11px 11px}
+.tile{position:relative;aspect-ratio:16/10;background:#0b1926;border:1px solid var(--line);border-radius:8px;overflow:hidden;cursor:pointer;min-width:0;touch-action:manipulation}
+.tile video{display:block;width:100%;height:100%;object-fit:contain;background:#000;pointer-events:none}
+.tile .overlay{position:absolute;inset:0;pointer-events:none;background:linear-gradient(to bottom,#03111fe5 0%,transparent 29%,transparent 65%,#03111fe5 100%)}
+.tile .name{position:absolute;left:7px;top:5px;font-size:clamp(10px,1.2vw,15px);font-weight:800;text-shadow:0 1px 2px #000;max-width:87%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:none}
+.tile .sound{position:absolute;right:6px;top:6px;font-size:12px;pointer-events:none}
+.tile .state{position:absolute;left:6px;right:6px;top:48%;transform:translateY(-50%);font-size:clamp(10px,1vw,13px);text-align:center;line-height:1.35;color:#b6ccdf;text-shadow:0 1px 3px #000;pointer-events:none}
+.tile .state.error{color:#ffcc9b}.tile .bottom{position:absolute;bottom:6px;left:7px;right:7px;display:flex;justify-content:space-between;gap:6px;align-items:center}
+.tile .hint{font-size:10px;color:#d7f5e9;text-shadow:0 1px 3px #000;pointer-events:none}
+.tile .pick{border:1px solid #6f8a9c;background:#112334f5;color:white;font-size:11px;border-radius:5px;padding:4px;max-width:70%;min-width:0}
+footer{padding:3px 13px 12px;color:#90a6b9;font-size:11px;line-height:1.5}
+.focus{position:fixed;inset:0;z-index:20;background:#000;display:none;flex-direction:column;align-items:stretch}
+.focus.show{display:flex}.focushead{position:absolute;z-index:30;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px;background:linear-gradient(#000c,#0000)}
+.focushead strong{font-size:clamp(15px,2.1vw,22px);text-shadow:0 1px 2px #000}.focus video{width:100%;height:100%;object-fit:contain}
+@media(max-width:610px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.tile{aspect-ratio:16/10}.controls button{font-size:12px;padding:8px 10px}}
+@media(min-width:611px) and (max-height:600px){.grid{gap:5px}.tile{aspect-ratio:16/8}footer{font-size:10px}}
+</style>
+</head>
+<body>
+<header>
+ <div><h1>MY GREEK TV <span style="color:var(--mint)">● LIVE</span></h1><p class="intro">8 θέσεις · 6 διαθέσιμα κανάλια · αγγίζεις ένα για ήχο και μεγάλη εικόνα</p></div>
+ <div class="controls"><button id="two" class="secondary">Δοκιμή 2</button><button id="all">▶ Έναρξη 6 LIVE</button><button id="stop" class="secondary">■ Παύση</button></div>
+</header>
+<div class="status" id="globalStatus">Πρώτα πάτησε <b>«Δοκιμή 2»</b>, μετά <b>«Έναρξη 6 LIVE»</b> αν λειτουργούν.</div>
+<main class="grid" id="grid"></main>
+<footer>Τα δύο κενά παράθυρα είναι διαθέσιμα για μελλοντικά κανάλια. Κάθε stream φορτώνεται απευθείας από τον αντίστοιχο πάροχο. Σε iPhone/CarPlay ορισμένοι browsers μπορεί να μη διαθέτουν ταυτόχρονη αποκωδικοποίηση ή λειτουργία inline video. Χρήση στην οθόνη της Mercedes μόνο με το όχημα σταθμευμένο.</footer>
+<div class="focus" id="focus"><div class="focushead"><button type="button" id="back">← ΠΙΣΩ ΣΤΑ ΚΑΝΑΛΙΑ</button><strong id="focusName"></strong></div><video id="focusVideo" playsinline webkit-playsinline preload="none" controls></video></div>
+<script>
+'use strict';
+const channels=[
+{id:'skai',name:'ΣΚΑΪ',url:'https://skai-live.siliconweb.com/media/cambria4/index.m3u8',format:'hls'},
+{id:'action',name:'ACTION 24',url:'https://actionlive.siliconweb.com/actionabr/actiontv/playlist.m3u8',format:'hls'},
+{id:'naft',name:'ΝΑΥΤΕΜΠΟΡΙΚΗ TV',url:'https://telmaco.ascdn.broadpeak.io/nafteboriki/default/index.m3u8',format:'hls'},
+{id:'ert',name:'ERT NEWS',url:'https://ert-ucdn.broadpeak-aas.com/bpk-tv/ERTNews/default/index.mpd',format:'dash'},
+{id:'open',name:'OPEN',url:'https://liveopen.siliconweb.com/openTvLive/liveopen/playlist.m3u8',format:'hls'},
+{id:'one',name:'ONE CHANNEL',url:'https://onechannel.siliconweb.com/one/stream/chunks_dvr.m3u8',format:'hls'}
+];
+const slots=['skai','action','naft','ert','open','one',null,null];
+const videos=[],states=[],dashSessions=new Array(8).fill(null),hlsSessions=new Array(8).fill(null);
+const grid=document.getElementById('grid'),focus=document.getElementById('focus'),focusVideo=document.getElementById('focusVideo');
+let active=null,started=0,focusDash=null,focusHls=null,playToken=0;
+for(let i=0;i<8;i++){
+ const tile=document.createElement('div');tile.className='tile';tile.tabIndex=0;tile.setAttribute('role','button');tile.setAttribute('aria-label',slots[i]?'Άνοιγμα '+channels.find(c=>c.id===slots[i]).name:'Κενή θέση');
+ const video=document.createElement('video');video.autoplay=true;video.muted=true;video.defaultMuted=true;video.playsInline=true;video.setAttribute('playsinline','');video.setAttribute('webkit-playsinline','');video.preload='none';
+ const overlay=document.createElement('div');overlay.className='overlay';
+ const name=document.createElement('div');name.className='name';
+ const sound=document.createElement('div');sound.className='sound';sound.textContent='🔇';
+ const state=document.createElement('div');state.className='state';
+ const bottom=document.createElement('div');bottom.className='bottom';const hint=document.createElement('div');hint.className='hint';hint.textContent='Πάτησε για επιλογή';
+ const pick=document.createElement('select');pick.className='pick';pick.setAttribute('aria-label','Κανάλι για θέση '+(i+1));
+ pick.innerHTML='<option value="">— Κενή —</option>'+channels.map(c=>'<option value="'+c.id+'">'+c.name+'</option>').join('');pick.value=slots[i]||'';
+ bottom.append(hint,pick);tile.append(video,overlay,name,sound,state,bottom);grid.append(tile);videos.push(video);states.push(state);
+ video.addEventListener('playing',()=>{state.textContent='';state.classList.remove('error')});
+ video.addEventListener('error',()=>{state.textContent='Δεν παίζει στον browser';state.classList.add('error')});
+ tile.addEventListener('click',e=>{if(e.target.closest('select'))return;openFocus(i)});
+ tile.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();openFocus(i)}});
+ pick.addEventListener('click',e=>e.stopPropagation());pick.addEventListener('change',()=>{slots[i]=pick.value||null;cleanup(i);updateLabel(i);if(started)loadSlot(i)});
+ updateLabel(i);
+}
+function updateLabel(i){const c=channels.find(x=>x.id===slots[i]);const tile=grid.children[i];tile.querySelector('.name').textContent=c?c.name:'Κενό κανάλι '+(i+1);states[i].textContent=c?'Αναμονή':'Διάλεξε κανάλι';}
+function status(msg){document.getElementById('globalStatus').textContent=msg}
+function cleanup(i){const v=videos[i];v.muted=true;v.pause();try{dashSessions[i]?.reset()}catch(e){}try{hlsSessions[i]?.destroy()}catch(e){}dashSessions[i]=null;hlsSessions[i]=null;v.removeAttribute('src');v.load()}
+function addScript(src){return new Promise((resolve,reject)=>{const s=document.createElement('script');s.src=src;s.onload=resolve;s.onerror=reject;document.head.appendChild(s)})}
+let dashLoading=null,hlsLoading=null;
+function needsDash(){return dashLoading||(dashLoading=addScript('https://cdn.jsdelivr.net/npm/dashjs@4.7.4/dist/dash.all.min.js'))}
+function needsHls(){return hlsLoading||(hlsLoading=addScript('https://cdn.jsdelivr.net/npm/hls.js@1.6.13/dist/hls.min.js'))}
+async function attachStream(video,c,index,isFocus=false){
+ let d=null,h=null;
+ if(c.format==='dash'){
+  try{await needsDash();d=window.dashjs.MediaPlayer().create();d.initialize(video,c.url,false);d.setMute(!isFocus)}catch(e){throw new Error('Το DASH stream δεν υποστηρίζεται εδώ')}
+ }else if(video.canPlayType('application/vnd.apple.mpegurl')){
+  video.src=c.url;
+ }else{
+  try{await needsHls();if(!Hls.isSupported())throw Error('Not supported');h=new Hls({startLevel:0,maxBufferLength:7,capLevelToPlayerSize:true});h.loadSource(c.url);h.attachMedia(video)}catch(e){throw new Error('Ο browser δεν υποστηρίζει HLS')}
+ }
+ if(isFocus){focusDash=d;focusHls=h}else{dashSessions[index]=d;hlsSessions[index]=h}
+ video.muted=!isFocus;video.defaultMuted=!isFocus;
+ try{await video.play()}catch(e){if(!isFocus)throw new Error('Απαιτείται άγγιγμα ή ο browser μπλοκάρει το inline video')}
+}
+async function loadSlot(i){const c=channels.find(x=>x.id===slots[i]);if(!c){states[i].textContent='Κενό';return}cleanup(i);states[i].textContent='Φόρτωση…';states[i].classList.remove('error');try{await attachStream(videos[i],c,i,false)}catch(e){states[i].textContent=e.message;states[i].classList.add('error')}}
+async function start(count){const token=++playToken;started=count;for(let i=0;i<8;i++){cleanup(i);updateLabel(i)}status('Ξεκινά η φόρτωση '+count+' καναλιών. Περίμενε λίγα δευτερόλεπτα.');let done=0;
+ for(let i=0;i<Math.min(count,8);i++){if(token!==playToken)break;if(slots[i]){void loadSlot(i);done++}await new Promise(r=>setTimeout(r,230))}
+ if(token===playToken)status('Ξεκίνησε η σύνδεση για '+done+' κανάλια. Περίμενε να εμφανιστούν εικόνες και πάτησε μία για ήχο.');
+}
+function stop(){++playToken;started=0;for(let i=0;i<8;i++){cleanup(i);updateLabel(i)}status('Όλα τα κανάλια έχουν σταματήσει.')}
+async function openFocus(i){const c=channels.find(x=>x.id===slots[i]);if(!c)return;
+ active=i;document.getElementById('focusName').textContent=c.name;focus.classList.add('show');
+ // Stop background media before starting the selected channel to keep one audio track and reduce decoder contention.
+ for(let j=0;j<8;j++)videos[j].pause();
+ focusVideo.pause();focusVideo.removeAttribute('src');focusVideo.load();
+ try{focusDash?.reset();focusHls?.destroy()}catch(e){}focusDash=null;focusHls=null;
+ focusVideo.muted=false;focusVideo.defaultMuted=false;
+ try{await attachStream(focusVideo,c,-1,true)}catch(e){status('Μεγάλη εικόνα: '+e.message)}
+}
+function closeFocus(){focusVideo.muted=true;focusVideo.pause();try{focusDash?.reset();focusHls?.destroy()}catch(e){}focusDash=null;focusHls=null;focusVideo.removeAttribute('src');focusVideo.load();focus.classList.remove('show');active=null;
+ if(started){for(let i=0;i<Math.min(started,8);i++){const v=videos[i];v.muted=true;v.defaultMuted=true;v.play().catch(()=>{states[i].textContent='Πάτησε «Έναρξη» ξανά'})}}
+}
+document.getElementById('two').addEventListener('click',()=>start(2));document.getElementById('all').addEventListener('click',()=>start(8));document.getElementById('stop').addEventListener('click',stop);document.getElementById('back').addEventListener('click',closeFocus);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&active!==null)closeFocus()});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){for(const v of videos)v.pause();if(active!==null)focusVideo.pause()}});
+</script>
+</body>
+</html>
